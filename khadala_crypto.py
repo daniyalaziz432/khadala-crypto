@@ -5230,9 +5230,9 @@ with tab13:
         # XVA integrals (trapezoidal)
         df_arr  = np.exp(-rf_rate * t_arr_xva)
         CVA_val = float((1-r_rec) * np.trapezoid(EE  * PD_inc, t_arr_xva))
-        DVA_val = float((1-r_rec) * np.trapzoid(ENE * PD_inc, t_arr_xva))
-        FVA_val = float(s_fund    * np.trapzoid(EE  * df_arr, t_arr_xva))
-        MVA_val = float(s_marg    * np.trapzoid(np.abs(MtM).mean(axis=0) * df_arr, t_arr_xva))
+        DVA_val = float((1-r_rec) * np.trapezoid(ENE * PD_inc, t_arr_xva))
+        FVA_val = float(s_fund    * np.trapezoid(EE  * df_arr, t_arr_xva))
+        MVA_val = float(s_marg    * np.trapezoid(np.abs(MtM).mean(axis=0) * df_arr, t_arr_xva))
         KVA_val = CVA_val * 0.10  # simplified: 10% of CVA as capital cost
 
         with cr:
