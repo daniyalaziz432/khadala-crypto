@@ -4958,8 +4958,8 @@ with tab13:
         pvals   = np.linspace(0.001, 0.999, 500)
         quants  = np.quantile(ret_rm, pvals)
         phi_exp = np.exp(-5*(1-pvals)) * 5  # exponential spectral weight
-        phi_exp /= np.trapz(phi_exp, pvals)
-        spectral_rm = -np.trapz(phi_exp * quants, pvals)
+        phi_exp /= np.trapezoid(phi_exp, pvals)
+        spectral_rm = -np.trapezoid(phi_exp * quants, pvals)
 
         fig_rm = make_subplots(rows=1, cols=2,
             subplot_titles=["Return Distribution with Risk Measures",
