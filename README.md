@@ -71,4 +71,4 @@ cd khadala-crypto
 pip install -r requirements.txt
 
 # 4. Run it!
-streamlit run khadala_crypto2.py
+streamlit run khadala_crypto.py
