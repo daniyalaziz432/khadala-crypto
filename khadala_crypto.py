@@ -4958,8 +4958,8 @@ with tab13:
         pvals   = np.linspace(0.001, 0.999, 500)
         quants  = np.quantile(ret_rm, pvals)
         phi_exp = np.exp(-5*(1-pvals)) * 5  # exponential spectral weight
-        phi_exp /= np.trapezoid(phi_exp, pvals)
-        spectral_rm = -np.trapezoid(phi_exp * quants, pvals)
+        phi_exp /= np.trapz(phi_exp, pvals)
+        spectral_rm = -np.trapz(phi_exp * quants, pvals)
 
         fig_rm = make_subplots(rows=1, cols=2,
             subplot_titles=["Return Distribution with Risk Measures",
@@ -5229,10 +5229,10 @@ with tab13:
 
         # XVA integrals (trapezoidal)
         df_arr  = np.exp(-rf_rate * t_arr_xva)
-        CVA_val = float((1-r_rec) * np.trapezoid(EE  * PD_inc, t_arr_xva))
-        DVA_val = float((1-r_rec) * np.trapezoid(ENE * PD_inc, t_arr_xva))
-        FVA_val = float(s_fund    * np.trapezoid(EE  * df_arr, t_arr_xva))
-        MVA_val = float(s_marg    * np.trapezoid(np.abs(MtM).mean(axis=0) * df_arr, t_arr_xva))
+        CVA_val = float((1-r_rec) * np.trapz(EE  * PD_inc, t_arr_xva))
+        DVA_val = float((1-r_rec) * np.trapz(ENE * PD_inc, t_arr_xva))
+        FVA_val = float(s_fund    * np.trapz(EE  * df_arr, t_arr_xva))
+        MVA_val = float(s_marg    * np.trapz(np.abs(MtM).mean(axis=0) * df_arr, t_arr_xva))
         KVA_val = CVA_val * 0.10  # simplified: 10% of CVA as capital cost
 
         with cr:
