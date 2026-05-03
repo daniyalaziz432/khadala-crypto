@@ -5924,7 +5924,7 @@ with tab15:
                 x_pred = F_ss @ x_est; P_pred = F_ss @ P_est @ F_ss.T + Q_ss
                 S_k  = H_i @ P_pred @ H_i.T + R_ss
                 K_k  = P_pred @ H_i.T / max(float(S_k[0,0]), 1e-12)
-                innov = y_ss[i] - float(H_i @ x_pred)
+                innov = float(y_ss[i]) - float(H_i @ x_pred)
                 x_est = x_pred + K_k.ravel() * innov
                 P_est = (np.eye(2) - np.outer(K_k.ravel(), H_i.ravel())) @ P_pred
                 states_ts.append(x_est.copy())
