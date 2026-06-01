@@ -17,7 +17,7 @@ Think of it as a Bloomberg terminal but just for crypto and totally free! You ca
 
 # Try It Live!
 
-[👉 Click here to use the live app 👈](https://khadala-crypto.streamlit.app)
+[👉 Click here to use the live app 👈](https://huggingface.co/spaces/daniyalaziz/khadala-crypto)
 
 No installation needed - just open in your browser!
 
