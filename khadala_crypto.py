@@ -4,7 +4,6 @@
 # tokens. Includes a full quant stack: GARCH, Heston, Black-Scholes, PCA,
 # SVD, Markowitz, CAPM, ML forecasting, LSTM, Q-learning, Kalman filter,
 # backtesting, XVA, SIMM, ADF/VAR/VECM, and more.
-# Run:  streamlit run khadala_crypto.py
 
 import streamlit as st
 import numpy as np
@@ -34,7 +33,7 @@ st.set_page_config(
     menu_items={"About": "Khadala Crypto v2.0 — Created by Daniyal Aziz"},
 )
 
-# CSS — dark trading terminal theme
+# CSS for trading terminal theme
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
@@ -132,7 +131,7 @@ a:hover { color:#00D4FF !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# CRYPTO REGISTRY  — Major Cryptocurrencies (Yahoo Finance tickers use -USD suffix)
+# CRYPTO REGISTRY :Major Cryptocurrencies
 STOCKS = {
     # Layer-1 / Proof-of-Work
     "BTC-USD":  {"name": "Bitcoin",              "sector": "Layer-1 PoW"},
@@ -199,7 +198,7 @@ PALETTE = [
     "#EF4444","#06B6D4","#84CC16","#EC4899","#6366F1",
 ]
 
-# DATA LOADING — fetch live Crypto OHLCV data from Yahoo Finance
+# DATA LOADING :fetch live Crypto OHLCV data from Yahoo Finance
 @st.cache_data(show_spinner=False, ttl=7200)
 def load_all_data(tickers: tuple) -> dict:
     """Download 2 years of daily OHLCV for each ticker via yfinance.
@@ -216,7 +215,7 @@ def load_all_data(tickers: tuple) -> dict:
             list(tickers),
             period="2y",
             interval="1d",
-            auto_adjust=True,   # crypto: no splits; adjusts for data gaps
+            auto_adjust=True, 
             progress=False,
             group_by="ticker",
             threads=True,
@@ -287,8 +286,7 @@ def build_matrices(stock_data: dict, tickers: tuple) -> tuple:
 
 
 # CRYPTO MARKET INTELLIGENCE — live quotes, news, on-chain sentiment proxy
-
-# Core crypto watchlist for the dashboard (always fetched for market overview)
+# Core crypto watchlist for the dashboard 
 SP500_WATCHLIST = [
     "BTC-USD","ETH-USD","SOL-USD","BNB-USD","XRP-USD","ADA-USD","DOGE-USD",
     "AVAX-USD","LINK-USD","DOT-USD","MATIC-USD","UNI-USD","AAVE-USD","MKR-USD",
@@ -447,7 +445,7 @@ def fetch_intraday(ticker: str, interval: str = "5m") -> pd.DataFrame:
     try:
         raw = yf.download(
             ticker,
-            period="2d",   # 2d is enough for intraday chart; much faster than 5d
+            period="2d", 
             interval=interval,
             auto_adjust=True,
             progress=False,
@@ -474,7 +472,7 @@ def lay(**kw): return {**_LAY, **kw}
 def ax(**kw):  return {**_AX,  **kw}
 
 
-# SIDEBAR — Bloomberg-style: controls + live crypto news feed
+# SIDEBAR : controls + live crypto news feed
 with st.sidebar:
     st.markdown("## 🪙 Khadala Crypto")
     st.markdown("**Crypto Quantitative Terminal**")
@@ -550,7 +548,7 @@ with st.sidebar:
     if len(loaded_sel) >= 2:
         closes, R_df = build_matrices(all_dfs, tuple(loaded_sel))
     else:
-        # Can't build — show error and use empty structures
+        # Cannott build — show error and use empty structures
         st.error("Need ≥ 2 loaded crypto assets. Check internet connection.")
         closes = pd.DataFrame()
         R_df   = pd.DataFrame()
@@ -628,7 +626,7 @@ with st.sidebar:
         st.caption("News unavailable. Check connection.")
 
 
-# GLOBAL HEADER — Crypto ticker tape + live price bar
+# GLOBAL HEADER :Crypto ticker tape + live price bar
 st.markdown("# 🪙  Khadala — Crypto Quantitative Terminal")
 
 # Index bar: BTC, ETH, SOL, BNB, XRP (live crypto prices)
@@ -656,7 +654,7 @@ mc3.metric("EW Annual Return", f"{p_ret:.2f}%")
 mc4.metric("EW Volatility",    f"{p_vol:.2f}%")
 mc5.metric("EW Sharpe",        f"{p_sh:.3f}")
 
-# Price strip — selected tickers (guard against empty closes)
+# Price strip :- selected tickers (guard against empty closes)
 if not closes.empty and T_days > 1:
     strip_tickers = [t for t in selected[:6] if t in closes.columns]
     strip = st.columns(max(len(strip_tickers), 1))
@@ -1622,7 +1620,7 @@ with tab7:
         <strong>Alpha:</strong> αᵢ = μᵢ − [Rƒ + βᵢ·(μm−Rƒ)]
         </div>""", unsafe_allow_html=True)
 
-        # ── Compute betas, alphas, t-stats ───────────────────────────────────
+        # Compute betas, alphas, t-stats
         var_mkt = float(mkt_ret_d.var())
         betas, alphas, t_betas, t_alphas, r2s = [], [], [], [], []
         for i, t in enumerate(selected):
@@ -1647,7 +1645,7 @@ with tab7:
         betas  = np.array(betas)
         alphas = np.array(alphas)
 
-        # ── Metrics row ───────────────────────────────────────────────────────
+        # Metrics row
         ca, cb, cc, cd = st.columns(4)
         ca.metric("Market Return (Ann)", f"{mkt_ret_ann*100:.2f}%")
         cb.metric("Market Vol (Ann)",    f"{mkt_vol_ann*100:.2f}%")
@@ -1688,7 +1686,7 @@ with tab7:
         fig_sml.update_yaxes(title_text="Ann Return (%)", **ax())
         st.plotly_chart(fig_sml, use_container_width=True)
 
-        # ── Alpha significance table ──────────────────────────────────────────
+        # Alpha significance table
         st.markdown("#### Alpha Significance Testing  —  OLS Regression Results")
         capm_df = pd.DataFrame({
             "Beta (β)":   [f"{b:.4f}" for b in betas],
@@ -1705,7 +1703,7 @@ with tab7:
         ), use_container_width=True)
         st.caption("★ p<0.05 · ★★ p<0.01 · ★★★ p<0.001  (two-tailed t-test against H₀: α = 0)")
 
-        # ── Rolling beta ─────────────────────────────────────────────────────
+        # Rolling beta
         st.markdown(f"#### Rolling {roll_win}-Day Beta  —  Time-Varying Market Sensitivity")
         fig_rb = go.Figure()
         for i, t in enumerate(selected[:min(N, 5)]):
@@ -1736,7 +1734,7 @@ with tab7:
         <strong>Greeks:</strong> Δ = Φ(d₁) · Γ = φ(d₁)/(Sσ√T) · ν = S·φ(d₁)·√T
         </div>""", unsafe_allow_html=True)
 
-        # ── BS engine ─────────────────────────────────────────────────────────
+        # BS engine
         def bs_price(S, K, T_yr, r, sigma, opt="call"):
             if T_yr <= 0 or sigma <= 0:
                 return max(S - K, 0) if opt == "call" else max(K - S, 0)
@@ -1760,7 +1758,7 @@ with tab7:
             rho    = K * T_yr * np.exp(-r * T_yr) * norm_cdf(d2) / 100
             return dict(delta=delta, gamma=gamma, vega=vega, theta=theta, rho=rho)
 
-        # ── Controls ──────────────────────────────────────────────────────────
+        # ── Controls ────────
         cl, cm, cr = st.columns([1, 1, 2])
         with cl:
             opt_t    = st.selectbox("Underlying", selected, key="opt_t7")
@@ -1785,7 +1783,7 @@ with tab7:
             g4.metric("Vega ν",  f"{greeks['vega']:.4f}")
             g5.metric("Theta θ", f"{greeks['theta']:.4f}")
 
-        # ── Implied vol surface ───────────────────────────────────────────────
+        # ── Implied vol surface ───
         st.markdown("#### Implied Volatility Surface  —  Strike × Expiry")
         strikes_pct = np.arange(75, 130, 5)
         expiries    = np.array([30, 60, 90, 120, 180, 252])
@@ -1822,7 +1820,7 @@ with tab7:
         )
         st.plotly_chart(fig_vol_surf, use_container_width=True)
 
-        # ── Historical vs implied vol ─────────────────────────────────────────
+        # ── Historical vs implied vol ────
         st.markdown("#### Historical vs Implied Volatility  —  Volatility Premium")
         hist_rv = R_df[opt_t].rolling(roll_win).std() * np.sqrt(252) * 100
         impl_v_ts = hist_rv * (1 + np.random.RandomState(0).normal(0, 0.08, len(hist_rv)))
@@ -1853,7 +1851,7 @@ with tab7:
         fig_vols.update_yaxes(title_text="Premium (%)", row=2, col=1, **ax())
         st.plotly_chart(fig_vols, use_container_width=True)
 
-        # ── Greeks vs spot ────────────────────────────────────────────────────
+        # ── Greeks vs spot ─────
         st.markdown("#### Option Greeks vs Spot Price")
         spot_range = np.linspace(S0 * 0.7, S0 * 1.3, 100)
         delta_v  = [bs_greeks(s, K, T_yr, rf_rate, imp_vol)["delta"] for s in spot_range]
@@ -1889,7 +1887,7 @@ with tab7:
         ret_ser = R_df[reg_t].values
         T_reg   = len(ret_ser)
 
-        # ── Classify regimes via rolling vol + return ─────────────────────────
+        # ── Classify regimes via rolling vol + return ──
         roll20  = pd.Series(ret_ser).rolling(20)
         r20_mu  = roll20.mean().fillna(0).values
         r20_sig = roll20.std().fillna(ret_ser.std()).values
@@ -1901,7 +1899,7 @@ with tab7:
         regime_labels = {0: "Bull 📈", 1: "Neutral ➡️", 2: "Bear/Volatile 📉"}
         regime_cols   = {0: "#10B981", 1: "#F59E0B", 2: "#EF4444"}
 
-        # ── Transition probability matrix ─────────────────────────────────────
+        # ── Transition probability matrix ──
         trans = np.zeros((3, 3))
         for i in range(T_reg - 1):
             trans[regimes[i], regimes[i + 1]] += 1
@@ -1913,7 +1911,7 @@ with tab7:
             pi = pi @ trans_norm
         pi = pi / pi.sum()
 
-        # ── Metrics ───────────────────────────────────────────────────────────
+        # ── Metrics ──────
         cur_reg = regimes[-1]
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Current Regime",   regime_labels[cur_reg])
@@ -1921,7 +1919,7 @@ with tab7:
         c3.metric("Neutral Prob",      f"{pi[1]*100:.1f}%")
         c4.metric("Bear/Vol Prob",     f"{pi[2]*100:.1f}%")
 
-        # ── Regime time series ────────────────────────────────────────────────
+        # ── Regime time series ────
         st.markdown("#### Regime Classification  —  Price with Regime Background")
         price_ser = closes[reg_t].values[-T_reg:]
         fig_reg = go.Figure()
@@ -1954,7 +1952,7 @@ with tab7:
         fig_reg.update_yaxes(title_text="Price", **ax())
         st.plotly_chart(fig_reg, use_container_width=True)
 
-        # ── Transition matrix heatmap ─────────────────────────────────────────
+        # ── Transition matrix heatmap ───────
         st.markdown("#### Transition Probability Matrix  P(Sₜ | Sₜ₋₁)")
         cl, cr = st.columns(2)
         with cl:
@@ -2003,7 +2001,7 @@ with tab7:
             fig_pi.update_xaxes(**ax()); fig_pi.update_yaxes(title_text="%", **ax())
             st.plotly_chart(fig_pi, use_container_width=True)
 
-        # ── Regime-conditional correlations ───────────────────────────────────
+        # ── Regime-conditional correlations ──────
         if N >= 2:
             st.markdown("#### Regime-Conditional Correlations  —  How relationships change across regimes")
             fig_rc2 = make_subplots(rows=1, cols=3,
@@ -2041,7 +2039,7 @@ with tab7:
         eff_t = st.selectbox("Stock for efficiency tests", selected, key="eff_t7")
         ret_e = R_df[eff_t].values
 
-        # ── Variance ratio test ───────────────────────────────────────────────
+        # ── Variance ratio test ────
         st.markdown("#### Variance Ratio Test  —  H₀: Returns follow a Random Walk")
         q_vals = [2, 4, 8, 16, 32]
         vr_vals, vr_z, vr_p = [], [], []
@@ -2073,7 +2071,7 @@ with tab7:
         fig_vr.update_yaxes(title_text="VR(q)", **ax())
         st.plotly_chart(fig_vr, use_container_width=True)
 
-        # ── VR results table ──────────────────────────────────────────────────
+        # ── VR results table ───
         vr_df = pd.DataFrame({
             "q (days)": q_vals,
             "VR(q)":    [f"{v:.4f}" for v in vr_vals],
@@ -2089,7 +2087,7 @@ with tab7:
         })
         st.dataframe(vr_df, use_container_width=True)
 
-        # ── Ljung-Box autocorrelation test ────────────────────────────────────
+        # ── Ljung-Box autocorrelation test ──
         st.markdown("#### Ljung-Box Test  —  Autocorrelation in Returns  (H₀: all ρₖ = 0)")
         max_lags = min(20, T_days // 5)
         lags_lb  = list(range(1, max_lags + 1))
@@ -2124,7 +2122,7 @@ with tab7:
         fig_acf.update_yaxes(**ax())
         st.plotly_chart(fig_acf, use_container_width=True)
 
-        # ── Runs test ─────────────────────────────────────────────────────────
+        # ── Runs test ────
         st.markdown("#### Runs Test  —  Independence of Return Signs  (H₀: runs are random)")
         cl, cr = st.columns(2)
         with cl:
@@ -2197,7 +2195,7 @@ with tab7:
             tp_pct   = st.slider("Take-profit level (%)", 2, 30, 15, 1, key="tp7")
             sim_runs = st.slider("Monte Carlo paths", 500, 5000, 2000, 500, key="sim7")
 
-        # ── First hitting time simulation ─────────────────────────────────────
+        # ── First hitting time simulation ──
         mu_s   = float(R_df[stop_t].mean())
         sig_s  = float(R_df[stop_t].std())
         np.random.seed(42)
@@ -2252,7 +2250,7 @@ with tab7:
         fig_ht.update_yaxes(title_text="Frequency", **ax())
         st.plotly_chart(fig_ht, use_container_width=True)
 
-        # ── Drawdown analysis ─────────────────────────────────────────────────
+        # ── Drawdown analysis ────
         st.markdown("#### Drawdown Analysis  —  Historical Drawdown Path")
         price_s   = closes[stop_t].values
         roll_max  = pd.Series(price_s).expanding().max().values
@@ -2286,7 +2284,7 @@ with tab7:
         fig_dd.update_yaxes(title_text="Drawdown (%)", row=2, col=1, **ax())
         st.plotly_chart(fig_dd, use_container_width=True)
 
-        # ── Stop-loss effectiveness ────────────────────────────────────────────
+        # ── Stop-loss effectiveness ──
         st.markdown("#### Stop-Loss Effectiveness  —  Varying SL Level")
         sl_levels  = np.arange(2, 22, 2)
         sl_rates_v, avg_hit_v, exp_return_v = [], [], []
@@ -2338,7 +2336,7 @@ with tab7:
         <strong>Attribution:</strong> σ²(Rᵢ) = Σₖ βᵢₖ²·σ²ₖ + σ²(εᵢ)
         </div>""", unsafe_allow_html=True)
 
-        # ── PCA factor extraction ─────────────────────────────────────────────
+        # ── PCA factor extraction ─────
         pca_ff = PCA()
         pca_ff.fit(Rc)
         n_fac_ff = min(3, N)
@@ -2359,7 +2357,7 @@ with tab7:
         factor_names_pca = [f"PCA-F{k+1} ({evr_ff[k]*100:.1f}%)" for k in range(n_fac_ff)]
         factor_names_ff  = ["MKT", "SMB (Low−High Vol)", "HML (High−Low Vol)"]
 
-        # ── Factor correlation comparison ─────────────────────────────────────
+        # ── Factor correlation comparison ────
         st.markdown("#### PCA Factors vs Fama-French Proxies  —  Correlation Matrix")
         all_factors = np.hstack([F_pca, F_ff])
         all_names   = factor_names_pca + factor_names_ff
@@ -2380,7 +2378,7 @@ with tab7:
         )
         st.plotly_chart(fig_corr_ff, use_container_width=True)
 
-        # ── Factor premium ────────────────────────────────────────────────────
+        # ── Factor premium ─
         st.markdown("#### Factor Premiums  —  E[Fₖ] − Rƒ  (Annualised)")
         cl, cr = st.columns(2)
         with cl:
@@ -2404,7 +2402,7 @@ with tab7:
             st.plotly_chart(fig_fp, use_container_width=True)
 
         with cr:
-            # ── Factor attribution per asset ──────────────────────────────────
+            # ── Factor attribution per asset ───
             st.markdown("**Factor Attribution (PCA 3-factor model)**")
             attr_rows = []
             for i, t in enumerate(selected):
@@ -2433,7 +2431,7 @@ with tab7:
             )
             st.dataframe(attr_df, use_container_width=True)
 
-        # ── Factor time series comparison ─────────────────────────────────────
+        # ── Factor time series comparison ──
         st.markdown("#### Factor Time Series — PCA vs FF Proxies (Cumulative)")
         fig_fts = go.Figure()
         all_F = [(F_pca[:, k], factor_names_pca[k], PALETTE[k]) for k in range(n_fac_ff)] + \
@@ -2453,7 +2451,7 @@ with tab7:
         fig_fts.update_yaxes(title_text="Cumulative Log-Return", **ax())
         st.plotly_chart(fig_fts, use_container_width=True)
 
-        # ── Factor attribution waterfall per stock ────────────────────────────
+        # ── Factor attribution waterfall per stock ───
         st.markdown("#### Variance Attribution Waterfall  —  Systematic vs Idiosyncratic per Asset")
         sys_pcts, idio_pcts = [], []
         for i in range(N):
@@ -6157,7 +6155,7 @@ def _build_features(price_series, return_series):
     bb_width   = prices.rolling(20).std()
     features["BB_pos"] = (prices - bb_midline) / (2 * bb_width.replace(0, np.nan))
 
-    # ATR proxy — average absolute return over 14 days
+    # ATR proxy :-average absolute return over 14 days
     features["ATR_14"] = returns.abs().rolling(14).mean()
 
     # Lagged returns — give the model a short memory of recent moves
@@ -7375,7 +7373,7 @@ with tab17:
         st.plotly_chart(_fig_live, use_container_width=True)
 
 
-# AUTHOR LINE
+# AUTHOR Signature
 st.markdown("""
 <div style="text-align:center;font-family:'JetBrains Mono';
             color:#1C3A5E;font-size:.75rem;padding:18px 0 10px;letter-spacing:.8px;">
